@@ -30,5 +30,7 @@ public class ProdutoService {
         return produtoRepository.save(obj);
     }
 
-
+    public void delete(Long id) {
+        produtoRepository.deleteById(id);
+    }
 }
