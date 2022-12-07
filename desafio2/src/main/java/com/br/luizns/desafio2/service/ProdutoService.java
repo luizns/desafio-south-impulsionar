@@ -26,4 +26,9 @@ public class ProdutoService {
         return obj.orElseThrow(() -> new RuntimeException());
     }
 
+    public Produto insert(Produto obj) {
+        return produtoRepository.save(obj);
+    }
+
+
 }
