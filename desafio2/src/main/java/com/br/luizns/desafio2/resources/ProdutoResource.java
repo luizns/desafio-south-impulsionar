@@ -1,5 +1,6 @@
 package com.br.luizns.desafio2.resources;
 
+import com.br.luizns.desafio2.dto.ProdutoDto;
 import com.br.luizns.desafio2.entity.Produto;
 import com.br.luizns.desafio2.service.ProdutoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +19,13 @@ public class ProdutoResource {
     private ProdutoService produtoService;
 
     @GetMapping
-    public ResponseEntity<List<Produto>> findaAll() {
-        List<Produto> list = produtoService.findAll();
-        return ResponseEntity.ok().body(list);
+    public ResponseEntity<List<ProdutoDto>> findAll() {
+        return ResponseEntity.ok().body(this.produtoService.findAll());
     }
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<Produto> findById(@PathVariable Long id) {
-        Produto obj = produtoService.findById(id);
-        return ResponseEntity.ok().body(obj);
+    @GetMapping("/{id}")
+    public ResponseEntity<ProdutoDto> byId(@PathVariable Long id) {
+        return ResponseEntity.ok().body(this.produtoService.findById(id));
     }
 
     @PostMapping
