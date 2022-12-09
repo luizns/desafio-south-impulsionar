@@ -40,7 +40,6 @@ public class ProdutoResource {
         }
     }
 
-
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         produtoService.delete(id);

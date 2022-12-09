@@ -39,7 +39,9 @@ public class ProdutoService {
     }
 
     public void delete(Long id) {
-        produtoRepository.deleteById(id);
+        this.produtoRepository
+                .findById(id)
+                .ifPresent(entity -> this.produtoRepository.delete(entity));
     }
 
     public Produto update(Long id, Produto obj) {
