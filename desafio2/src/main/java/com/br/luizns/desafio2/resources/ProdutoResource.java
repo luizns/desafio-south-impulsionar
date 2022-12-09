@@ -1,6 +1,7 @@
 package com.br.luizns.desafio2.resources;
 
 import com.br.luizns.desafio2.dto.ProdutoDto;
+import com.br.luizns.desafio2.dto.ProdutoRequestDto;
 import com.br.luizns.desafio2.entity.Produto;
 import com.br.luizns.desafio2.service.ProdutoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +30,16 @@ public class ProdutoResource {
     }
 
     @PostMapping
-    public ResponseEntity<Produto> insert(@RequestBody Produto obj) {
-        obj = produtoService.insert(obj);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").buildAndExpand(obj.getId()).toUri();
-        return ResponseEntity.created(uri).body(obj);
+    public ResponseEntity<ProdutoDto> insert(@RequestBody ProdutoRequestDto dto) {
+        try {
+            ProdutoDto produtoDto = produtoService.insert(dto);
+            URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").buildAndExpand(produtoDto.getId()).toUri();
+            return ResponseEntity.created(uri).body(produtoDto);
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().build();
+        }
     }
+
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

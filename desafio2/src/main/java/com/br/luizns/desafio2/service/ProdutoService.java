@@ -2,10 +2,12 @@ package com.br.luizns.desafio2.service;
 
 import com.br.luizns.desafio2.convert.ProdutoConvert;
 import com.br.luizns.desafio2.dto.ProdutoDto;
+import com.br.luizns.desafio2.dto.ProdutoRequestDto;
 import com.br.luizns.desafio2.entity.Produto;
 import com.br.luizns.desafio2.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,8 +30,12 @@ public class ProdutoService {
                 .orElseThrow(RuntimeException::new);
     }
 
-    public Produto insert(Produto obj) {
-        return produtoRepository.save(obj);
+    public ProdutoDto insert(ProdutoRequestDto request) {
+        Assert.isNull(request.getId(), "Não foi possível inserir o registro");
+
+        return ProdutoConvert
+                .entityToDto(this.produtoRepository
+                        .save(ProdutoConvert.dtoToEntity(request)));
     }
 
     public void delete(Long id) {
