@@ -2,7 +2,6 @@ package com.br.luizns.desafio2.resources;
 
 import com.br.luizns.desafio2.dto.ProdutoDto;
 import com.br.luizns.desafio2.dto.ProdutoRequestDto;
-import com.br.luizns.desafio2.entity.Produto;
 import com.br.luizns.desafio2.service.ProdutoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -47,8 +46,9 @@ public class ProdutoResource {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Produto> put(@PathVariable Long id, @RequestBody Produto produto) {
-        produto = produtoService.update(id, produto);
+    public ResponseEntity<ProdutoDto> update(@PathVariable Long id, @RequestBody ProdutoRequestDto request) {
+        ProdutoDto produto = produtoService.update(id, request);
         return ResponseEntity.ok().body(produto);
     }
+
 }

@@ -44,29 +44,32 @@ public class ProdutoService {
                 .ifPresent(entity -> this.produtoRepository.delete(entity));
     }
 
-    public Produto update(Long id, Produto obj) {
+    public ProdutoDto update(Long id, ProdutoRequestDto request) {
+
         Optional<Produto> optional = produtoRepository.findById(id);
-        Produto entity = optional.get();
+        if (optional.isPresent()) {
+            Produto db = optional.get();
+            db.setCategoria(request.getCategoria());
+            db.setCodigoProduto(request.getCodigoProduto());
+            db.setCodigoDeBarras(request.getCodigoDeBarras());
+            db.setSerie(request.getSerie());
+            db.setNome(request.getNome());
+            db.setDescricao(request.getDescricao());
+            db.setCategoria(request.getCategoria());
+            db.setValorBruto(request.getValorBruto());
+            db.setImpostos(request.getImpostos());
+            db.setDataDeFabricacao(request.getDataDeFabricacao());
+            db.setDataDeValidade(request.getDataDeValidade());
+            db.setCor(request.getCor());
+            db.setMaterial(request.getMaterial());
+            db.setQuantidade(request.getQuantidade());
 
-        updateData(entity, obj);
+            produtoRepository.save(db);
 
-        return produtoRepository.save(entity);
-    }
+            return ProdutoConvert.entityToDto(db);
+        } else {
+            throw new RuntimeException("Não foi possível atualizar o registro");
 
-    private void updateData(Produto entity, Produto obj) {
-        entity.setCategoria(obj.getCategoria());
-        entity.setCodigoProduto(obj.getCodigoProduto());
-        entity.setCodigoDeBarras(obj.getCodigoDeBarras());
-        entity.setSerie(obj.getSerie());
-        entity.setNome(obj.getNome());
-        entity.setDescricao(obj.getDescricao());
-        entity.setCategoria(obj.getCategoria());
-        entity.setValorBruto(obj.getValorBruto());
-        entity.setImpostos(obj.getImpostos());
-        entity.setDataDeFabricacao(obj.getDataDeFabricacao());
-        entity.setDataDeValidade(obj.getDataDeValidade());
-        entity.setCor(obj.getCor());
-        entity.setMaterial(obj.getMaterial());
-        entity.setQuantidade(obj.getQuantidade());
+        }
     }
 }
