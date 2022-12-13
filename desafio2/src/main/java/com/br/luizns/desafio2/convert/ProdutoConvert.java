@@ -4,6 +4,9 @@ import com.br.luizns.desafio2.dto.ProdutoDto;
 import com.br.luizns.desafio2.dto.ProdutoRequestDto;
 import com.br.luizns.desafio2.entity.Produto;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class ProdutoConvert {
     public static Produto dtoToEntity(ProdutoRequestDto request) {
         return Produto.builder()
@@ -41,5 +44,6 @@ public class ProdutoConvert {
                 .quantidade(entity.getQuantidade())
                 .build();
     }
+
 }
 

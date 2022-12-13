@@ -5,10 +5,13 @@ import com.br.luizns.desafio2.dto.ProdutoDto;
 import com.br.luizns.desafio2.dto.ProdutoRequestDto;
 import com.br.luizns.desafio2.entity.Produto;
 import com.br.luizns.desafio2.repository.ProdutoRepository;
+import com.br.luizns.desafio2.util.ProdutoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,6 +73,18 @@ public class ProdutoService {
         } else {
             throw new RuntimeException("Não foi possível atualizar o registro");
 
+        }
+    }
+
+
+    public List<ProdutoDto> salvar(MultipartFile file) {
+        try {
+
+            List<Produto> produtos = ProdutoUtil.csvParaProduto(file.getInputStream());
+            return this.produtoRepository.saveAll(produtos).stream().map(ProdutoConvert::entityToDto).collect(Collectors.toList());
+
+        } catch (IOException e) {
+            throw new RuntimeException("falha ao armazenar dados csv: " + e.getMessage());
         }
     }
 }
