@@ -15,17 +15,10 @@ spring:
       path: /h2-console
       settings:
         trace: false
-
-    jpa:
-      database-platform: org.hibernate.dialect.H2Dialect
-      hibernate:
-        ddl-auto: update
-      properties:
-        hibernate:
-          format_sql: true
-          show_sql: true
-      show-sql: true
-
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
 
   flyway:
     enabled: false
