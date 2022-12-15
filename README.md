@@ -41,10 +41,10 @@ para finalizar a aplicação digite:
 Para Iniciar a aplicação via usando IDE, é necessário as seguintes configurações no PROFILE - `dev`:
 - JDK 11 ou +
 - POSTGRES CONFIGURADO:
-    - PORTA: 5432
-    - Database: produtodb
-    - username: postgres
-    - password: 1234567
+  - PORTA: 5432
+  - Database: produtodb
+  - username: postgres
+  - password: 1234567
 
 ou altera o PROFILE para `local`para rodar em banco de dados em memória
 
@@ -129,11 +129,9 @@ Como gerar arquivos de importação.
 |------|----------------|-----|----|---------|---------|-------------------------------------|----------------------------|--------------------------|-----------------|----------|----------|
 |7t0do00n|629936360072|2/2016|Livro Design Patterns|"Livro sobre padrões de projeto de Erich Gamma, Ralph Johnson, Richard Helm e John Vlissides"|ESCRITÓRIO| "101,11"| 25| 18/05/2016| n/a| n/a| papel    |
 
-Modelo do arquivos gerado com extensão CSV (Ex: `arquivo.csv`)
-```
-código,codigo de barras,série,nome,descrição,categoria,valor bruto,impostos (%),data de fabricação,data de validade,cor,material
-t0n75ytr,945923371680,1/2017,Teclado Gamer,Teclado mecânico para jogos com luzes RGB,ESCRITÓRIO,"120,99",35,23/12/2016,n/a,colorido,plástico
+#### Modelo do arquivos gerado com extensão CSV (Ex: `arquivo.csv`)
+<br>
 
-```
+<a href="./desafio2/mostruario_fabrica.csv/">Arquivos de  Importação</a>
 
-
+<br>
