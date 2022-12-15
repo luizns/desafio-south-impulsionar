@@ -1,14 +1,14 @@
 package com.br.luizns.desafio2.convert;
 
-import com.br.luizns.desafio2.dto.ProdutoDto;
-import com.br.luizns.desafio2.dto.ProdutoRequestDto;
+import com.br.luizns.desafio2.dto.ProdutoDTO;
+import com.br.luizns.desafio2.dto.ProdutoRequestDTO;
 import com.br.luizns.desafio2.entity.Produto;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class ProdutoConvert {
-    public static Produto dtoToEntity(ProdutoRequestDto request) {
+    public static Produto dtoToEntity(ProdutoRequestDTO request) {
         return Produto.builder()
                 .codigoProduto(request.getCodigoProduto())
                 .codigoDeBarras(request.getCodigoDeBarras())
@@ -26,24 +26,24 @@ public class ProdutoConvert {
                 .build();
     }
 
-    public static ProdutoDto entityToDto(Produto entity) {
-        return ProdutoDto.builder()
+    public static ProdutoDTO entityToDto(Produto entity) {
+
+        BigDecimal porcentos = new BigDecimal("100.0");
+        BigDecimal taxa = new BigDecimal("45.0").divide(porcentos);
+        BigDecimal valorImposto = entity.getValorBruto().multiply((entity.getImpostos().divide(porcentos)));
+        BigDecimal calculoTaxa = (valorImposto.add(entity.getValorBruto())).multiply(taxa);
+        var valorTotal  = entity.getValorBruto().add(valorImposto).add(calculoTaxa).setScale(2, RoundingMode.HALF_EVEN);
+
+
+        return ProdutoDTO.builder()
                 .id(entity.getId())
-                 .codigoProduto(entity.getCodigoProduto())
-                .codigoDeBarras(entity.getCodigoDeBarras())
-                .serie(entity.getSerie())
                 .nome(entity.getNome())
-                .descricao(entity.getDescricao())
                 .categoria(entity.getCategoria())
-                .valorBruto(entity.getValorBruto())
-                .impostos(entity.getImpostos())
-                .dataDeFabricacao(entity.getDataDeFabricacao())
-                .dataDeValidade(entity.getDataDeValidade())
-                .cor(entity.getCor())
-                .material(entity.getMaterial())
                 .quantidade(entity.getQuantidade())
+                .valoTotal(valorTotal)
                 .build();
     }
 
-}
 
+
+}

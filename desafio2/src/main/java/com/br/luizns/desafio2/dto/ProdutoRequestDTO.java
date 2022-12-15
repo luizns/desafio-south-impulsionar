@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Data
 @Builder
 @With
-public class ProdutoRequestDto implements Serializable {
+public class ProdutoRequestDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long id;
     private String codigoProduto;

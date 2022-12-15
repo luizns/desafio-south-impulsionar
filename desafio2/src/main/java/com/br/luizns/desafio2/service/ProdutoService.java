@@ -1,8 +1,8 @@
 package com.br.luizns.desafio2.service;
 
 import com.br.luizns.desafio2.convert.ProdutoConvert;
-import com.br.luizns.desafio2.dto.ProdutoDto;
-import com.br.luizns.desafio2.dto.ProdutoRequestDto;
+import com.br.luizns.desafio2.dto.ProdutoDTO;
+import com.br.luizns.desafio2.dto.ProdutoRequestDTO;
 import com.br.luizns.desafio2.entity.Produto;
 import com.br.luizns.desafio2.repository.ProdutoRepository;
 import com.br.luizns.desafio2.util.ProdutoUtil;
@@ -12,6 +12,8 @@ import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,18 +24,18 @@ public class ProdutoService {
     @Autowired
     private ProdutoRepository produtoRepository;
 
-    public List<ProdutoDto> findAll() {
+    public List<ProdutoDTO> findAll() {
         return this.produtoRepository.findAll().stream().map(ProdutoConvert::entityToDto).collect(Collectors.toList());
     }
 
-    public ProdutoDto findById(Long id) {
+    public ProdutoDTO findById(Long id) {
         return this.produtoRepository
                 .findById(id)
                 .map(ProdutoConvert::entityToDto)
                 .orElseThrow(RuntimeException::new);
     }
 
-    public ProdutoDto insert(ProdutoRequestDto request) {
+    public ProdutoDTO insert(ProdutoRequestDTO request) {
         Assert.isNull(request.getId(), "Não foi possível inserir o registro");
 
         return ProdutoConvert
@@ -47,7 +49,7 @@ public class ProdutoService {
                 .ifPresent(entity -> this.produtoRepository.delete(entity));
     }
 
-    public ProdutoDto update(Long id, ProdutoRequestDto request) {
+    public ProdutoDTO update(Long id, ProdutoRequestDTO request) {
 
         Optional<Produto> optional = produtoRepository.findById(id);
         if (optional.isPresent()) {
@@ -76,15 +78,20 @@ public class ProdutoService {
         }
     }
 
+    public List<ProdutoDTO> salvarArquivo(MultipartFile file) {
 
-    public List<ProdutoDto> salvar(MultipartFile file) {
         try {
-
-            List<Produto> produtos = ProdutoUtil.csvParaProduto(file.getInputStream());
-            return this.produtoRepository.saveAll(produtos).stream().map(ProdutoConvert::entityToDto).collect(Collectors.toList());
-
+            List<Produto> list = ProdutoUtil.csvParaProduto(file.getInputStream());
+            return this.produtoRepository.saveAll(list).stream().map(ProdutoConvert::entityToDto).collect(Collectors.toList());
         } catch (IOException e) {
-            throw new RuntimeException("falha ao armazenar dados csv: " + e.getMessage());
+            throw new RuntimeException("fail to store csv data: " + e.getMessage());
         }
+
+
     }
+
+
+
+
+
 }
