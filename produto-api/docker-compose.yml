@@ -1,0 +1,28 @@
+version: '3.1'
+
+services:
+
+  API:
+    container_name: produto_api
+    image: 'app.jar'
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - URL_POSTGRES=jdbc:postgresql://PostgreSQL:5432/produto_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345678
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - PostgreSQL
+
+  PostgreSQL:
+    container_name: postgres_db
+    image: postgres:12-alpine
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=produto_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345678

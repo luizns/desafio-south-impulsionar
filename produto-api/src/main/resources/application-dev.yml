@@ -1,0 +1,15 @@
+#PostgreSql
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/produto_db
+    username: postgres
+    password: 12345678
+
+  flyway:
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    locations: classpath:db/migration
+    enabled: true
+    validate-on-migrate: true
+
