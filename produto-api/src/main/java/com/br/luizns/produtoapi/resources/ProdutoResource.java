@@ -15,7 +15,6 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
-
 @RestController
 @RequestMapping(value = "/produtos")
 public class ProdutoResource {
@@ -42,7 +41,7 @@ public class ProdutoResource {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarProduto(@PathVariable Long id) {
         produtoService.delete(id);
         return ResponseEntity.noContent().build();
     }

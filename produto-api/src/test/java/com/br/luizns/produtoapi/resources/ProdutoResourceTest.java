@@ -142,7 +142,7 @@ class ProdutoResourceTest {
 
         var jsonBody = objectMapper.writeValueAsString(request);
         var result = mockMvc
-                .perform(MockMvcRequestBuilders.put(URL.concat("/{id}"), 100L)
+                .perform(MockMvcRequestBuilders.put(URL.concat("/{id}"), 1000L)
                         .content(jsonBody)
                         .contentType(MediaType.APPLICATION_JSON)
                 );
@@ -160,7 +160,7 @@ class ProdutoResourceTest {
 
         var jsonBody = objectMapper.writeValueAsString(request);
         var result = mockMvc
-                .perform(MockMvcRequestBuilders.put(URL.concat("/{id}"), 1)
+                .perform(MockMvcRequestBuilders.put(URL.concat("/{id}"), 1L)
                         .content(jsonBody)
                         .contentType(MediaType.APPLICATION_JSON)
                 );
@@ -196,6 +196,37 @@ class ProdutoResourceTest {
         result.andExpect(MockMvcResultMatchers.jsonPath("$.nome").value(request.getNome()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.categoria").value(request.getCategoria()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.quantidade").value(request.getQuantidade()));
+
+    }
+
+    @Test
+    void deleteProdutoDTODeveRetonarSuccessQuandoIdExiste() throws Exception {
+
+        var result = mockMvc
+                .perform(MockMvcRequestBuilders.delete(URL.concat("/{id}"), 3L)
+
+                        .contentType(MediaType.APPLICATION_JSON)
+                );
+
+        result.andDo(MockMvcResultHandlers.print());
+        result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+        result.andExpect(MockMvcResultMatchers.status().isNoContent());
+
+    }
+
+    @Test
+    void deleteProdutoDTODeveRetornaNotFoundQuandoIdNaoExiste() throws Exception {
+
+        var result = mockMvc
+                .perform(MockMvcRequestBuilders.delete(URL.concat("/{id}"), 902)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                );
+
+        result.andDo(MockMvcResultHandlers.print());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").doesNotExist());
+        result.andExpect(MockMvcResultMatchers.status().is4xxClientError());
+        result.andExpect(MockMvcResultMatchers.status().isNotFound());
 
     }
 

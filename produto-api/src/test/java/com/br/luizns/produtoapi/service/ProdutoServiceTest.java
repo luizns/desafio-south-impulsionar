@@ -79,4 +79,21 @@ class ProdutoServiceTest {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCodigoProduto(), request.getCodigoProduto());
     }
+
+    @Test
+    void deleteShouldReturnProdutoDtoWhenSuccess() throws Exception {
+        var request = ProdutoCreator.createFakerRequest();
+        var produtoSave = produtoMapper.dtoParaEntidade(request).withId(1L);
+
+        Mockito.when(repository.findById(1L)).thenReturn(Optional.of(produtoSave));
+        Mockito.doNothing().when(repository).deleteById(1L);
+
+
+        var response = service.buscarProdutoPorId(1L);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(response.getCodigoProduto(), request.getCodigoProduto());
+
+    }
+
 }

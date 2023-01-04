@@ -8,8 +8,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import java.security.Provider;
-
 @Mapper(componentModel = "spring", imports = ProdutoService.class)
 public interface ProdutoMapper {
     ProdutoMapper INSTANCE = Mappers.getMapper(ProdutoMapper.class);

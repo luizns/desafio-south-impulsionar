@@ -9,6 +9,7 @@ import com.br.luizns.produtoapi.service.exceptions.ResourceNotFoundException;
 import com.br.luizns.produtoapi.util.ProdutoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,16 +25,18 @@ public class ProdutoService {
 
     @Autowired
     private ProdutoRepository produtoRepository;
+    @Autowired
+    private ProdutoMapper produtoMapper;
 
 
     public List<ProdutoDTO> listarTodosProdutos() {
-        return this.produtoRepository.findAll().stream().map(ProdutoMapper.INSTANCE::entidadeParaDto).collect(Collectors.toList());
+        return this.produtoRepository.findAll().stream().map(produtoMapper.INSTANCE::entidadeParaDto).collect(Collectors.toList());
     }
 
     public ProdutoDTO buscarProdutoPorId(Long id) {
         return this.produtoRepository
                 .findById(id)
-                .map(ProdutoMapper.INSTANCE::entidadeParaDto)
+                .map(produtoMapper.INSTANCE::entidadeParaDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Id produto não encontrado: " + id));
     }
 
@@ -41,7 +44,7 @@ public class ProdutoService {
 
         Assert.isNull(request.getId(), "Não foi possível inserir o produto");
 
-        var produto = ProdutoMapper.INSTANCE.dtoParaEntidade(request);
+        var produto = produtoMapper.INSTANCE.dtoParaEntidade(request);
 
         boolean codidoProduto = produtoRepository.findByCodigoProduto(produto.getCodigoProduto())
                 .stream()
@@ -50,15 +53,15 @@ public class ProdutoService {
         if (codidoProduto) {
             throw new DataIntegrityViolationException("Produto já cadastrado na base dados: COD. = " + produto.getCodigoProduto());
         }
-        return ProdutoMapper.INSTANCE.entidadeParaDto(this.produtoRepository.save(produto));
-
-
+        return produtoMapper.INSTANCE.entidadeParaDto(this.produtoRepository.save(produto));
     }
 
-    public void delete(Long id) {
-        this.produtoRepository
-                .findById(id)
-                .ifPresent(entity -> this.produtoRepository.delete(entity));
+        public void delete(Long id) {
+        try {
+            this.produtoRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException("Id não encontrado: " + id);
+        }
     }
 
     public ProdutoDTO atualizarProduto(Long id, ProdutoRequestDTO request) {
@@ -81,7 +84,7 @@ public class ProdutoService {
 
                             produtoRepository.save(produto);
 
-                            return ProdutoMapper.INSTANCE.entidadeParaDto(produto);
+                            return produtoMapper.INSTANCE.entidadeParaDto(produto);
                         }
                 )
                 .orElseThrow(() -> new ResourceNotFoundException("Id não encontrado: " + id));
@@ -92,7 +95,7 @@ public class ProdutoService {
 
         try {
             List<Produto> list = ProdutoUtil.csvParaProduto(file.getInputStream());
-            return this.produtoRepository.saveAll(list).stream().map(ProdutoMapper.INSTANCE::entidadeParaDto).collect(Collectors.toList());
+            return this.produtoRepository.saveAll(list).stream().map(produtoMapper.INSTANCE::entidadeParaDto).collect(Collectors.toList());
         } catch (IOException e) {
             throw new ResourceNotFoundException("Falha ao armazenar dados csv: " + e.getMessage());
         }
