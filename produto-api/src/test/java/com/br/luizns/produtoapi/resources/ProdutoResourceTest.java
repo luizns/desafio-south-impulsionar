@@ -48,7 +48,7 @@ class ProdutoResourceTest {
                 );
 
         result.andDo(MockMvcResultHandlers.print());
-        result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+
         result.andExpect(MockMvcResultMatchers.status().isCreated());
         result.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
 
@@ -56,8 +56,6 @@ class ProdutoResourceTest {
         result.andExpect(MockMvcResultMatchers.jsonPath("$.nome").value(request.getNome()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.categoria").value(request.getCategoria()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.quantidade").value(request.getQuantidade()));
-
-
     }
 
     @Test
@@ -105,10 +103,9 @@ class ProdutoResourceTest {
         result.andDo(MockMvcResultHandlers.print());
         result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
         result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].codigoProduto").exists());
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].codigoProduto").value("7t0do00n"));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].codigoProduto").value("7t09o00n"));
 
     }
-
 
     @Test
     void buscarProdutoIdDeveRetornarSuccessQuandoIdExiste() throws Exception {
@@ -121,7 +118,7 @@ class ProdutoResourceTest {
         result.andDo(MockMvcResultHandlers.print());
         result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
         result.andExpect(MockMvcResultMatchers.jsonPath("$.codigoProduto").exists());
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.codigoProduto").value("7t0do00n"));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.codigoProduto").value("7t09o00n"));
     }
 
     @Test
@@ -139,6 +136,67 @@ class ProdutoResourceTest {
         result.andExpect(MockMvcResultMatchers.jsonPath("$.codigoProduto").doesNotExist());
     }
 
+    @Test
+    void atualizaDeveRetornarNotFoundQuandoIdNaoExiste() throws Exception {
+        var request = produtoMapper.INSTANCE.dtoParaEntidade(ProdutoCreator.updateFakerRequest());
 
+        var jsonBody = objectMapper.writeValueAsString(request);
+        var result = mockMvc
+                .perform(MockMvcRequestBuilders.put(URL.concat("/{id}"), 100L)
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                );
+
+        result.andDo(MockMvcResultHandlers.print());
+        result.andExpect(MockMvcResultMatchers.status().is4xxClientError());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").doesNotExist());
+        result.andExpect(MockMvcResultMatchers.status().isNotFound());
+
+    }
+
+    @Test
+    void atualizarProdutoDeveRetornarSuccessQuandoIdExiste() throws Exception {
+        var request = produtoMapper.INSTANCE.dtoParaEntidade(ProdutoCreator.updateRequest());
+
+        var jsonBody = objectMapper.writeValueAsString(request);
+        var result = mockMvc
+                .perform(MockMvcRequestBuilders.put(URL.concat("/{id}"), 1)
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                );
+
+        result.andDo(MockMvcResultHandlers.print());
+        result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
+
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.codigoProduto").value(request.getCodigoProduto()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.nome").value(request.getNome()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.categoria").value(request.getCategoria()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.quantidade").value(request.getQuantidade()));
+
+    }
+
+
+    @Test
+    void atualizarProdutoDeveRetornarSuccessQuandoIdExisteFaker() throws Exception {
+        var request = produtoMapper.INSTANCE.dtoParaEntidade(ProdutoCreator.updateFakerRequest());
+
+        var jsonBody = objectMapper.writeValueAsString(request);
+        var result = mockMvc
+                .perform(MockMvcRequestBuilders.put(URL.concat("/{id}"), 2)
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                );
+
+        result.andDo(MockMvcResultHandlers.print());
+        result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
+
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.codigoProduto").value(request.getCodigoProduto()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.nome").value(request.getNome()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.categoria").value(request.getCategoria()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.quantidade").value(request.getQuantidade()));
+
+    }
 
 }

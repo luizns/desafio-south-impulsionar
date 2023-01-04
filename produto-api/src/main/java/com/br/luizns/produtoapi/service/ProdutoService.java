@@ -1,6 +1,5 @@
 package com.br.luizns.produtoapi.service;
 
-import com.br.luizns.produtoapi.convert.ProdutoConvert;
 import com.br.luizns.produtoapi.dto.ProdutoDTO;
 import com.br.luizns.produtoapi.dto.ProdutoRequestDTO;
 import com.br.luizns.produtoapi.entity.Produto;
@@ -18,7 +17,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,47 +61,43 @@ public class ProdutoService {
                 .ifPresent(entity -> this.produtoRepository.delete(entity));
     }
 
-    public ProdutoDTO update(Long id, ProdutoRequestDTO request) {
+    public ProdutoDTO atualizarProduto(Long id, ProdutoRequestDTO request) {
 
-        Optional<Produto> optional = produtoRepository.findById(id);
-        if (optional.isPresent()) {
-            Produto db = optional.get();
-            db.setCategoria(request.getCategoria());
-            db.setCodigoProduto(request.getCodigoProduto());
-            db.setCodigoDeBarras(request.getCodigoDeBarras());
-            db.setSerie(request.getSerie());
-            db.setNome(request.getNome());
-            db.setDescricao(request.getDescricao());
-            db.setCategoria(request.getCategoria());
-            db.setValorBruto(request.getValorBruto());
-            db.setImpostos(request.getImpostos());
-            db.setDataDeFabricacao(request.getDataDeFabricacao());
-            db.setDataDeValidade(request.getDataDeValidade());
-            db.setCor(request.getCor());
-            db.setMaterial(request.getMaterial());
-            db.setQuantidade(request.getQuantidade());
+        return this.produtoRepository.findById(id)
+                .map(produto -> {
+                            produto.setCodigoProduto(request.getCodigoProduto());
+                            produto.setCodigoDeBarras(request.getCodigoDeBarras());
+                            produto.setSerie(request.getSerie());
+                            produto.setNome(request.getNome());
+                            produto.setDescricao(request.getDescricao());
+                            produto.setCategoria(request.getCategoria());
+                            produto.setValorBruto(request.getValorBruto());
+                            produto.setImpostos(request.getImpostos());
+                            produto.setDataDeFabricacao(request.getDataDeFabricacao());
+                            produto.setDataDeValidade(request.getDataDeValidade());
+                            produto.setCor(request.getCor());
+                            produto.setMaterial(request.getMaterial());
+                            produto.setQuantidade(request.getQuantidade());
 
-            produtoRepository.save(db);
+                            produtoRepository.save(produto);
 
-            return ProdutoConvert.entityToDto(db);
-        } else {
-            throw new RuntimeException("Não foi possível atualizar o registro");
+                            return ProdutoMapper.INSTANCE.entidadeParaDto(produto);
+                        }
+                )
+                .orElseThrow(() -> new ResourceNotFoundException("Id não encontrado: " + id));
 
-        }
     }
 
     public List<ProdutoDTO> salvarArquivo(MultipartFile file) {
 
         try {
             List<Produto> list = ProdutoUtil.csvParaProduto(file.getInputStream());
-            return this.produtoRepository.saveAll(list).stream().map(ProdutoConvert::entityToDto).collect(Collectors.toList());
+            return this.produtoRepository.saveAll(list).stream().map(ProdutoMapper.INSTANCE::entidadeParaDto).collect(Collectors.toList());
         } catch (IOException e) {
-            throw new RuntimeException("Falha ao armazenar dados csv: " + e.getMessage());
+            throw new ResourceNotFoundException("Falha ao armazenar dados csv: " + e.getMessage());
         }
 
-
     }
-
 
     public static BigDecimal getValorFinal(Produto request) {
 

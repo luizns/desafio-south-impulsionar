@@ -66,4 +66,17 @@ class ProdutoServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> service.buscarProdutoPorId(1000L));
     }
 
+    @Test
+    void atualizarProdutoDTODeveRetornarSuccess() throws Exception {
+        var request = ProdutoCreator.createFakerRequest();
+        var produtoSave = produtoMapper.INSTANCE.dtoParaEntidade(request).withId(3L);
+
+        Mockito.when(repository.findById(3L)).thenReturn(Optional.of(produtoSave));
+        Mockito.when(repository.save(produtoSave)).thenReturn(produtoSave);
+
+        var response = service.atualizarProduto(3L, request);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(response.getCodigoProduto(), request.getCodigoProduto());
+    }
 }

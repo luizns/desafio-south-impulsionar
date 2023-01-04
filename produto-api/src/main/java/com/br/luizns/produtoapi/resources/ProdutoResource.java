@@ -48,13 +48,13 @@ public class ProdutoResource {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<ProdutoDTO> update(@PathVariable Long id, @RequestBody @Valid ProdutoRequestDTO request) {
-        ProdutoDTO produto = produtoService.update(id, request);
+    public ResponseEntity<ProdutoDTO> atualizarProduto(@PathVariable Long id, @RequestBody @Valid ProdutoRequestDTO request) {
+        ProdutoDTO produto = produtoService.atualizarProduto(id, request);
         return ResponseEntity.ok().body(produto);
     }
 
     @PostMapping(value = "/upload")
-    public ResponseEntity<List<ProdutoDTO>> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<List<ProdutoDTO>> uploadArquivoCSV(@RequestParam("file") MultipartFile file) {
 
         if (ProdutoUtil.temFormatoCSV(file)) {
             try {

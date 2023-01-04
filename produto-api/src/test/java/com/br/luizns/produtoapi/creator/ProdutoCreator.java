@@ -56,4 +56,50 @@ public class ProdutoCreator {
 
     }
 
+    public static ProdutoRequestDTO updateFakerRequest() {
+        var fakeValuesService = new FakeValuesService(new Locale("pt-BR"), new RandomService());
+
+        var faker = new Faker(new Locale("pt-BR"));
+
+        String stringAlfaNumerico = fakeValuesService.regexify("[a-z0-9]{8}");
+        String stringNumerica = fakeValuesService.regexify("[0-9]{12}");
+
+
+
+        return ProdutoRequestDTO.builder()
+                .codigoProduto(stringAlfaNumerico)
+                .codigoDeBarras(stringNumerica)
+                .serie(LocalDate.now().getMonthValue() +"/"+ LocalDate.now().getYear())
+                .nome(faker.commerce().productName())
+                .descricao(faker.commerce().material())
+                .categoria(faker.commerce().department())
+                .valorBruto(new BigDecimal(faker.commerce().price().replace(",", ".")))
+                .impostos(new BigDecimal(faker.commerce().price().replace(",", ".")))
+                .dataDeFabricacao(LocalDate.now())
+                .dataDeValidade(ProdutoUtil.localDatFormat(""))
+                .cor(faker.commerce().color())
+                .material(faker.commerce().material())
+                .quantidade(faker.number().randomDigitNotZero())
+                .build();
+
+    }
+
+    public static ProdutoRequestDTO updateRequest() {
+        return ProdutoRequestDTO.builder()
+                .codigoProduto("7t09o00n")
+                .codigoDeBarras("929936360073")
+                .serie("1/2018")
+                .nome("Livro Padrões Projetos")
+                .descricao("Livro melhores praticas")
+                .categoria("ESCRITORIO")
+                .valorBruto(new BigDecimal("59.90"))
+                .impostos(new BigDecimal("15.0"))
+                .dataDeFabricacao(ProdutoUtil.localDatFormat("22/08/2022"))
+                .dataDeValidade(ProdutoUtil.localDatFormat(""))
+                .cor("BRANCO")
+                .material("PAPEL")
+                .quantidade(6)
+                .build();
+    }
+
 }
