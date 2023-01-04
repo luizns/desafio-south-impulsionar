@@ -34,14 +34,11 @@ public class ProdutoResource {
     }
 
     @PostMapping
-    public ResponseEntity<ProdutoDTO> insert(@RequestBody @Valid ProdutoRequestDTO dto) {
-        try {
-            ProdutoDTO produtoDto = produtoService.insert(dto);
-            URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").buildAndExpand(produtoDto.getId()).toUri();
-            return ResponseEntity.created(uri).body(produtoDto);
-        } catch (Exception ex) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<ProdutoDTO> cadastrarProduto(@RequestBody @Valid ProdutoRequestDTO dto) {
+
+        ProdutoDTO produtoDto = produtoService.inserir(dto);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").buildAndExpand(produtoDto.getId()).toUri();
+        return ResponseEntity.created(uri).body(produtoDto);
     }
 
     @DeleteMapping(value = "/{id}")
@@ -56,7 +53,7 @@ public class ProdutoResource {
         return ResponseEntity.ok().body(produto);
     }
 
-    @PostMapping(value ="/upload")
+    @PostMapping(value = "/upload")
     public ResponseEntity<List<ProdutoDTO>> uploadFile(@RequestParam("file") MultipartFile file) {
 
         if (ProdutoUtil.temFormatoCSV(file)) {

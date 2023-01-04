@@ -12,8 +12,11 @@ public class ProdutoDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Long id;
+    private String codigoProduto;
     private String nome;
     private String categoria;
     private Integer quantidade;
-    private BigDecimal valoTotal;
+    private BigDecimal valorFinal;
+
+
 }

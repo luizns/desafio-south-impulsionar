@@ -28,11 +28,11 @@ public class ProdutoConvert {
 
     public static ProdutoDTO entityToDto(Produto entity) {
 
-        BigDecimal porcentos = new BigDecimal("100.0");
-        BigDecimal taxa = new BigDecimal("45.0").divide(porcentos);
-        BigDecimal valorImposto = entity.getValorBruto().multiply((entity.getImpostos().divide(porcentos)));
-        BigDecimal calculoTaxa = (valorImposto.add(entity.getValorBruto())).multiply(taxa);
-        var valorTotal  = entity.getValorBruto().add(valorImposto).add(calculoTaxa).setScale(2, RoundingMode.HALF_EVEN);
+//        BigDecimal porcentos = new BigDecimal("100.0");
+//        BigDecimal taxa = new BigDecimal("45.0").divide(porcentos);
+//        BigDecimal valorImposto = entity.getValorBruto().multiply((entity.getImpostos().divide(porcentos)));
+//        BigDecimal calculoTaxa = (valorImposto.add(entity.getValorBruto())).multiply(taxa);
+//        var valorTotal  = entity.getValorBruto().add(valorImposto).add(calculoTaxa).setScale(2, RoundingMode.HALF_EVEN);
 
 
         return ProdutoDTO.builder()
@@ -40,7 +40,7 @@ public class ProdutoConvert {
                 .nome(entity.getNome())
                 .categoria(entity.getCategoria())
                 .quantidade(entity.getQuantidade())
-                .valoTotal(valorTotal)
+//                .valoTotal(valorTotal)
                 .build();
     }
 
