@@ -96,4 +96,49 @@ class ProdutoResourceTest {
         result.andExpect(MockMvcResultMatchers.status().is4xxClientError());
         result.andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
+
+    @Test
+    void listarTodosProdutosDeveRetornarSuccess() throws Exception {
+        var result = mockMvc.perform(MockMvcRequestBuilders.get(URL)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        result.andDo(MockMvcResultHandlers.print());
+        result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].codigoProduto").exists());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].codigoProduto").value("7t0do00n"));
+
+    }
+
+
+    @Test
+    void buscarProdutoIdDeveRetornarSuccessQuandoIdExiste() throws Exception {
+
+        var result = mockMvc
+                .perform(MockMvcRequestBuilders.get(URL.concat("/{id}"), 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                );
+
+        result.andDo(MockMvcResultHandlers.print());
+        result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.codigoProduto").exists());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.codigoProduto").value("7t0do00n"));
+    }
+
+    @Test
+    void buscarProdutoIdDeveRetornarNotFoundQuandoNaoIdExiste() throws Exception {
+
+        var result = mockMvc
+                .perform(MockMvcRequestBuilders.get(URL.concat("/{id}"), 100)
+                        .contentType(MediaType.APPLICATION_JSON)
+                );
+
+        result.andDo(MockMvcResultHandlers.print());
+        result.andExpect(MockMvcResultMatchers.status().is4xxClientError());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.codigoProduto").doesNotExist());
+        result.andExpect(MockMvcResultMatchers.status().isNotFound());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.codigoProduto").doesNotExist());
+    }
+
+
+
 }
