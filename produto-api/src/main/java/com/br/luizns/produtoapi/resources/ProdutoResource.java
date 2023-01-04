@@ -24,13 +24,13 @@ public class ProdutoResource {
     private ProdutoService produtoService;
 
     @GetMapping
-    public ResponseEntity<List<ProdutoDTO>> findAll() {
-        return ResponseEntity.ok().body(this.produtoService.findAll());
+    public ResponseEntity<List<ProdutoDTO>> listarTodosProdutos() {
+        return ResponseEntity.ok().body(this.produtoService.listarTodosProdutos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProdutoDTO> byId(@PathVariable Long id) {
-        return ResponseEntity.ok().body(this.produtoService.findById(id));
+    public ResponseEntity<ProdutoDTO> buscarProdutoPorId(@PathVariable Long id) {
+        return ResponseEntity.ok().body(this.produtoService.buscarProdutoPorId(id));
     }
 
     @PostMapping

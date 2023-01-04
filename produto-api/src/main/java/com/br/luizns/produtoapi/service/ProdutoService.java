@@ -6,6 +6,7 @@ import com.br.luizns.produtoapi.dto.ProdutoRequestDTO;
 import com.br.luizns.produtoapi.entity.Produto;
 import com.br.luizns.produtoapi.mapper.ProdutoMapper;
 import com.br.luizns.produtoapi.repository.ProdutoRepository;
+import com.br.luizns.produtoapi.service.exceptions.ResourceNotFoundException;
 import com.br.luizns.produtoapi.util.ProdutoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,15 +27,16 @@ public class ProdutoService {
     @Autowired
     private ProdutoRepository produtoRepository;
 
-    public List<ProdutoDTO> findAll() {
+
+    public List<ProdutoDTO> listarTodosProdutos() {
         return this.produtoRepository.findAll().stream().map(ProdutoMapper.INSTANCE::entidadeParaDto).collect(Collectors.toList());
     }
 
-    public ProdutoDTO findById(Long id) {
+    public ProdutoDTO buscarProdutoPorId(Long id) {
         return this.produtoRepository
                 .findById(id)
-                .map(ProdutoConvert::entityToDto)
-                .orElseThrow(RuntimeException::new);
+                .map(ProdutoMapper.INSTANCE::entidadeParaDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Id produto não encontrado: " + id));
     }
 
     public ProdutoDTO inserir(ProdutoRequestDTO request) {
@@ -103,7 +105,6 @@ public class ProdutoService {
     }
 
 
-
     public static BigDecimal getValorFinal(Produto request) {
 
         var valorBrutoProduto = request.getValorBruto();
@@ -121,7 +122,6 @@ public class ProdutoService {
 
         return calculoValorFinal.setScale(2, RoundingMode.HALF_EVEN);
     }
-
 
 
 }

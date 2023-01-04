@@ -40,7 +40,6 @@ public class ProdutoConvert {
                 .nome(entity.getNome())
                 .categoria(entity.getCategoria())
                 .quantidade(entity.getQuantidade())
-//                .valoTotal(valorTotal)
                 .build();
     }
 
