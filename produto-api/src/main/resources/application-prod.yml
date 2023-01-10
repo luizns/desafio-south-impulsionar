@@ -2,7 +2,7 @@ spring:
   datasource:
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
-    url: ${POSTGRES_URL_DB}
+    url: ${URL_POSTGRES}
 
 
   flyway:

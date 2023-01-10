@@ -4,7 +4,9 @@ services:
 
   API:
     container_name: produto_api
-    image: 'app.jar'
+    build:
+      context: ./
+    image: produto/api
     restart: always
     ports:
       - "8080:8080"
@@ -12,7 +14,7 @@ services:
       - URL_POSTGRES=jdbc:postgresql://PostgreSQL:5432/produto_db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=12345678
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=prod
     depends_on:
       - PostgreSQL
 
