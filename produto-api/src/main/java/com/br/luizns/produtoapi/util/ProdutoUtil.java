@@ -1,6 +1,7 @@
 package com.br.luizns.produtoapi.util;
 
 import com.br.luizns.produtoapi.entity.Produto;
+import com.br.luizns.produtoapi.service.ProdutoService;
 import com.br.luizns.produtoapi.service.exceptions.ResourceNotFoundException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -51,8 +52,13 @@ public class ProdutoUtil {
                 String cor = csvRecord.get(HEADERS[10]);
                 String material = csvRecord.get(HEADERS[11]);
                 Integer quantidade = 0;
+                BigDecimal valorFinal = null;
 
-                produtos.add(new Produto(null, codigoProduto, codigoDeBarras, serie, nome, descricao, categoria, valorBruto, impostos, dataDeFabricacao, dataDeValidade, cor, material, quantidade));
+
+                Produto produto = new Produto(null, codigoProduto, codigoDeBarras, serie, nome, descricao, categoria, valorBruto, impostos, dataDeFabricacao, dataDeValidade, cor, material, quantidade, null);
+                produto.setValorFinal(ProdutoService.getValorFinal(produto));
+                produtos.add(produto);
+
             }
 
             return produtos;

@@ -53,6 +53,7 @@ public class ProdutoService {
         if (codidoProduto) {
             throw new DataIntegrityViolationException("Produto já cadastrado na base dados: COD. = " + produto.getCodigoProduto());
         }
+        produto.setValorFinal(getValorFinal(produto));
         return produtoMapper.INSTANCE.entidadeParaDto(this.produtoRepository.save(produto));
     }
 

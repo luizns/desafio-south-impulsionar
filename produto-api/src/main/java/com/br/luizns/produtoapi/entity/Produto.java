@@ -1,12 +1,10 @@
 package com.br.luizns.produtoapi.entity;
 
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 
 
@@ -36,5 +34,8 @@ public class Produto implements Serializable {
     private String cor;
     private String material;
     private Integer quantidade;
+
+    private BigDecimal valorFinal;
+
 
 }

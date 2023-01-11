@@ -13,5 +13,6 @@ CREATE TABLE IF NOT EXISTS tb_produto (
 	cor varchar(255),
 	material varchar(255),
 	quantidade numeric(18),
+	valor_final numeric(19, 2),
 	CONSTRAINT tb_produto_pkey PRIMARY KEY (id)
 );

@@ -28,7 +28,6 @@ class ProdutoServiceTest {
     @Mock
     private ProdutoRepository repository;
 
-    @Spy
     private static ProdutoMapper produtoMapper;
 
     @BeforeAll

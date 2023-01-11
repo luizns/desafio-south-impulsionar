@@ -57,5 +57,7 @@ public class ProdutoRequestDTO implements Serializable {
     @Min(value = 0)
     @PositiveOrZero(message = "campo não pode ser menor que zero")
     private Integer quantidade;
+    @Min(value = 0)
+    private BigDecimal valorFinal;
 
 }

@@ -16,6 +16,7 @@ public class ProdutoDTO implements Serializable {
     private String nome;
     private String categoria;
     private Integer quantidade;
+    private BigDecimal impostos;
     private BigDecimal valorFinal;
 
 
