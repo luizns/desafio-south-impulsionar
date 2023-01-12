@@ -13,10 +13,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
+import static com.br.luizns.produtoapi.service.ProdutoService.getValorFinal;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
@@ -39,6 +41,15 @@ class ProdutoServiceTest {
     void criarProdutosRetornarStatusCodeCreated() throws Exception {
         var request = ProdutoCreator.createFakerRequest();
         var produtoSave = produtoMapper.INSTANCE.dtoParaEntidade(request);
+
+        var codidoProduto = service.buscarProdutoCodigoProduto(produtoSave);
+
+        if (codidoProduto) {
+            throw new DataIntegrityViolationException("Produto já cadastrado na base dados: COD. = " + produtoSave.getCodigoProduto());
+        }
+
+        produtoSave.setValorFinal(getValorFinal(produtoSave.getValorBruto(), produtoSave.getImpostos()));
+
 
         Mockito.when(repository.save(produtoSave)).thenReturn(produtoSave);
 

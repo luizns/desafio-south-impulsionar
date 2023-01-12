@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,18 +47,17 @@ public class ProdutoService {
 
         var produto = produtoMapper.INSTANCE.dtoParaEntidade(request);
 
-        boolean codidoProduto = produtoRepository.findByCodigoProduto(produto.getCodigoProduto())
-                .stream()
-                .anyMatch(produtoExistente -> !produtoExistente.equals(produto));
+        var codidoProduto = buscarProdutoCodigoProduto(produto);
 
         if (codidoProduto) {
             throw new DataIntegrityViolationException("Produto já cadastrado na base dados: COD. = " + produto.getCodigoProduto());
         }
-        produto.setValorFinal(getValorFinal(produto));
+
+        produto.setValorFinal(getValorFinal(produto.getValorBruto(), produto.getImpostos()));
         return produtoMapper.INSTANCE.entidadeParaDto(this.produtoRepository.save(produto));
     }
 
-        public void delete(Long id) {
+    public void delete(Long id) {
         try {
             this.produtoRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
@@ -103,10 +103,12 @@ public class ProdutoService {
 
     }
 
-    public static BigDecimal getValorFinal(Produto request) {
+    public static BigDecimal getValorFinal(BigDecimal valorBrutoProduto, BigDecimal impostoProduto) {
 
-        var valorBrutoProduto = request.getValorBruto();
-        var valorImpostoProduto = request.getImpostos();
+        if (Objects.equals(valorBrutoProduto, BigDecimal.valueOf(0)) ||
+                Objects.equals(impostoProduto, BigDecimal.valueOf(0))) {
+            return BigDecimal.ZERO;
+        }
 
         var percentual = new BigDecimal("100.00");
         var taxaPercentualDaMargemDeLucro = new BigDecimal("45.0")
@@ -114,11 +116,17 @@ public class ProdutoService {
                 .add(new BigDecimal("1.00"));
 
         var calculoTaxaImpostoMaisValorBruto = valorBrutoProduto.multiply(
-                (valorImpostoProduto.add(new BigDecimal("100.00"))
+                (impostoProduto.add(new BigDecimal("100.00"))
                         .divide(percentual, 3, RoundingMode.HALF_EVEN)));
         var calculoValorFinal = calculoTaxaImpostoMaisValorBruto.multiply(taxaPercentualDaMargemDeLucro);
 
         return calculoValorFinal.setScale(2, RoundingMode.HALF_EVEN);
+    }
+
+    public Boolean buscarProdutoCodigoProduto(Produto request) {
+        return produtoRepository.findByCodigoProduto(request.getCodigoProduto())
+                .stream()
+                .anyMatch(produtoExistente -> !produtoExistente.equals(request));
     }
 
 

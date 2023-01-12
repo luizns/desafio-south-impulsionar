@@ -56,7 +56,7 @@ public class ProdutoUtil {
 
 
                 Produto produto = new Produto(null, codigoProduto, codigoDeBarras, serie, nome, descricao, categoria, valorBruto, impostos, dataDeFabricacao, dataDeValidade, cor, material, quantidade, null);
-                produto.setValorFinal(ProdutoService.getValorFinal(produto));
+                produto.setValorFinal(ProdutoService.getValorFinal(produto.getValorBruto(), produto.getImpostos()));
                 produtos.add(produto);
 
             }
