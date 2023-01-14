@@ -29,6 +29,9 @@ public class ProdutoService {
     @Autowired
     private ProdutoMapper produtoMapper;
 
+    @Autowired
+    private RabbitMQService rabbitmqService;
+
 
     public List<ProdutoDTO> listarTodosProdutos() {
         return this.produtoRepository.findAll().stream().map(produtoMapper.INSTANCE::entidadeParaDto).collect(Collectors.toList());
@@ -63,6 +66,16 @@ public class ProdutoService {
         } catch (EmptyResultDataAccessException e) {
             throw new ResourceNotFoundException("Id não encontrado: " + id);
         }
+    }
+
+    public String alterarQuantidadeEstoque(String codigoProduto, Integer quantidade) {
+        return this.produtoRepository
+                .findByCodigoProduto(codigoProduto)
+                .map(produto -> {
+                    produto.setQuantidade(quantidade);
+                    this.rabbitmqService.enviarMensagem(produtoMapper.INSTANCE.entidadeParaDto(produto));
+                    return "CodigoProduto: " + produto.getCodigoProduto();
+                }).orElseThrow(() -> new ResourceNotFoundException("Código do produto não encontrado: " + codigoProduto));
     }
 
     public ProdutoDTO atualizarProduto(Long id, ProdutoRequestDTO request) {

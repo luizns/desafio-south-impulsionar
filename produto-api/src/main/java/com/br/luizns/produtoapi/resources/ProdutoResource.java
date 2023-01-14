@@ -46,6 +46,13 @@ public class ProdutoResource {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping(value = "/alterar-estoque/{codigoProduto}")
+    public ResponseEntity<String> atualizarProdutoEstoque(@PathVariable String codigoProduto, @RequestParam Integer quantidade) {
+        var produto = this.produtoService.alterarQuantidadeEstoque(codigoProduto, quantidade);
+        var texto = "Produto enviado para fila ";
+        return ResponseEntity.ok().body(texto + produto);
+    }
+
     @PutMapping(value = "/{id}")
     public ResponseEntity<ProdutoDTO> atualizarProduto(@PathVariable Long id, @RequestBody @Valid ProdutoRequestDTO request) {
         ProdutoDTO produto = produtoService.atualizarProduto(id, request);
