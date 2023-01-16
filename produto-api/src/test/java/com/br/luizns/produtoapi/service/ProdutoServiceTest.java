@@ -42,11 +42,6 @@ class ProdutoServiceTest {
         var request = ProdutoCreator.createFakerRequest();
         var produtoSave = produtoMapper.INSTANCE.dtoParaEntidade(request);
 
-        var codidoProduto = service.buscarProdutoCodigoProduto(produtoSave);
-
-        if (codidoProduto) {
-            throw new DataIntegrityViolationException("Produto já cadastrado na base dados: COD. = " + produtoSave.getCodigoProduto());
-        }
 
         produtoSave.setValorFinal(getValorFinal(produtoSave.getValorBruto(), produtoSave.getImpostos()));
 

@@ -46,7 +46,7 @@ public class ProdutoResource {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping(value = "/alterar-estoque/{codigoProduto}")
+    @PatchMapping(value = "/{codigoProduto}")
     public ResponseEntity<String> atualizarProdutoEstoque(@PathVariable String codigoProduto, @RequestParam Integer quantidade) {
         var produto = this.produtoService.alterarQuantidadeEstoque(codigoProduto, quantidade);
         var texto = "Produto enviado para fila ";

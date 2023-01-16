@@ -73,7 +73,7 @@ public class ProdutoService {
                 .findByCodigoProduto(codigoProduto)
                 .map(produto -> {
                     produto.setQuantidade(quantidade);
-                    this.rabbitmqService.enviarMensagem(produtoMapper.INSTANCE.entidadeParaDto(produto));
+                    this.rabbitmqService.enviarMensagem(produto);
                     return "CodigoProduto: " + produto.getCodigoProduto();
                 }).orElseThrow(() -> new ResourceNotFoundException("Código do produto não encontrado: " + codigoProduto));
     }

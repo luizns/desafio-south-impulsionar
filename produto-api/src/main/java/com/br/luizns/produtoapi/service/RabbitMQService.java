@@ -25,7 +25,7 @@ public class RabbitMQService {
 
             MessagePostProcessor messagePostProcessor = message -> {
                 MessageProperties messageProperties = message.getMessageProperties();
-                messageProperties.setHeader("ultima",PRODUTO_EVENT_HEADER_NAME);
+                messageProperties.setHeader("EVENTO",PRODUTO_EVENT_HEADER_NAME);
                 return  message;
             };
             this.rabbitTemplate.convertAndSend(RabbitMQConnection.NOME_EXCHANGE, RabbitMQConnection.ROUTING_KEY, objectJson,messagePostProcessor);
