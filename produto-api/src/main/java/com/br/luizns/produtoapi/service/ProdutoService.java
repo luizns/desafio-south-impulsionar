@@ -95,6 +95,7 @@ public class ProdutoService {
                             produto.setCor(request.getCor());
                             produto.setMaterial(request.getMaterial());
                             produto.setQuantidade(request.getQuantidade());
+                            produto.setValorFinal(getValorFinal(request.getValorBruto(), request.getImpostos()));
 
                             produtoRepository.save(produto);
 

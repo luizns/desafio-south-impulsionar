@@ -77,6 +77,7 @@ class ProdutoServiceTest {
     void atualizarProdutoDTODeveRetornarSuccess() throws Exception {
         var request = ProdutoCreator.createFakerRequest();
         var produtoSave = produtoMapper.INSTANCE.dtoParaEntidade(request).withId(3L);
+        produtoSave.setValorFinal(getValorFinal(produtoSave.getValorBruto(), produtoSave.getImpostos()));
 
         Mockito.when(repository.findById(3L)).thenReturn(Optional.of(produtoSave));
         Mockito.when(repository.save(produtoSave)).thenReturn(produtoSave);
