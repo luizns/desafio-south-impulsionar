@@ -5,6 +5,7 @@ import com.br.luizns.produtoapi.mapper.ProdutoMapper;
 import com.br.luizns.produtoapi.mapper.ProdutoMapperImpl;
 import com.br.luizns.produtoapi.repository.ProdutoRepository;
 import com.br.luizns.produtoapi.service.exceptions.ResourceNotFoundException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -12,8 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
@@ -29,6 +28,9 @@ class ProdutoServiceTest {
 
     @Mock
     private ProdutoRepository repository;
+
+    @Mock
+    private RabbitMQService rabbitMQService;
 
     private static ProdutoMapper produtoMapper;
 
@@ -99,6 +101,20 @@ class ProdutoServiceTest {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCodigoProduto(), request.getCodigoProduto());
 
+    }
+
+    @Test
+    void alterarQuantidadeEstoqueDeveRetornarSuccess() throws JsonProcessingException {
+        var request = ProdutoCreator.createFakerRequest();
+        var produtoSave = produtoMapper.dtoParaEntidade(request).withId(1L);
+
+        Mockito.when(repository.findByCodigoProduto(produtoSave.getCodigoProduto())).thenReturn(Optional.of(produtoSave));
+        Mockito.doNothing().when(rabbitMQService).enviarMensagem(produtoSave);
+
+        var response = service.alterarQuantidadeEstoque(produtoSave.getCodigoProduto(), 6);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals("CodigoProduto: " + produtoSave.getCodigoProduto(), response);
     }
 
 }

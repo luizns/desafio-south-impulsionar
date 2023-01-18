@@ -18,3 +18,4 @@ spring:
     port: 5672
     username: guest
     password: 12345678
+    virtual-host: /

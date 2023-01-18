@@ -1,11 +1,14 @@
 package com.br.luizns.produtoapi.resources;
 
+import com.br.luizns.produtoapi.config.RabbitMQConnection;
 import com.br.luizns.produtoapi.creator.ProdutoCreator;
 import com.br.luizns.produtoapi.mapper.ProdutoMapper;
 import com.br.luizns.produtoapi.mapper.ProdutoMapperImpl;
+import com.br.luizns.produtoapi.service.RabbitMQService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,6 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import static org.hamcrest.Matchers.containsString;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -149,7 +154,7 @@ class ProdutoResourceTest {
 
         result.andDo(MockMvcResultHandlers.print());
         result.andExpect(MockMvcResultMatchers.status().is4xxClientError());
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").doesNotExist());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.codigoProduto").doesNotExist());
         result.andExpect(MockMvcResultMatchers.status().isNotFound());
 
     }
@@ -175,7 +180,6 @@ class ProdutoResourceTest {
         result.andExpect(MockMvcResultMatchers.jsonPath("$.quantidade").value(request.getQuantidade()));
 
     }
-
 
     @Test
     void atualizarProdutoDeveRetornarSuccessQuandoIdExisteFaker() throws Exception {
@@ -230,4 +234,36 @@ class ProdutoResourceTest {
 
     }
 
+
+    @Test
+    void alteraQuantidade_ProdutoDeveRetornarSuccessQuandoCodigoExiste() throws Exception {
+        var request = produtoMapper.INSTANCE.dtoParaEntidade(ProdutoCreator.createRequest());
+        var codigo = "7t0do00n";
+        var texto = "Produto enviado para fila " + "CodigoProduto: " + codigo;
+        ;
+        var result = mockMvc
+                .perform(MockMvcRequestBuilders.patch(URL.concat("/{codigoProduto}"), codigo)
+                        .param("quantidade", String.valueOf(request.getQuantidade()))
+                );
+
+        result.andDo(MockMvcResultHandlers.print());
+        result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+        result.andExpect(MockMvcResultMatchers.content().string(containsString(texto)));
+
+    }
+
+    @Test
+    void alterarQuantidadeEstoqueDeveRetornarNotFoundQuandoQuandoCodigoExiste() throws Exception {
+        var request = produtoMapper.INSTANCE.dtoParaEntidade(ProdutoCreator.createRequest());
+        var codigo = "z123z211";
+        var result = mockMvc
+                .perform(MockMvcRequestBuilders.patch(URL.concat("/{codigoProduto}"), codigo)
+                        .param("quantidade", String.valueOf(request.getQuantidade()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                );
+
+        result.andDo(MockMvcResultHandlers.print());
+        result.andExpect(MockMvcResultMatchers.status().isNotFound());
+
+    }
 }
