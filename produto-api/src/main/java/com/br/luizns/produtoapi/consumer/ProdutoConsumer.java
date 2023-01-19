@@ -31,7 +31,9 @@ public class ProdutoConsumer {
         var headers = message.getHeaders();
         var chaveHeader = String.valueOf(message.getHeaders().get("EVENTO"));
 
-        if (headers.containsValue(chaveHeader)) {
+        log.info(chaveHeader);
+
+        if (headers.containsValue("PRODUCT_CHANGED")) {
             var produtoAlterado = ProdutoMapper.INSTANCE.entidadeParaDto(this.repository.save(request));
             log.info(produtoAlterado.toString());
 
