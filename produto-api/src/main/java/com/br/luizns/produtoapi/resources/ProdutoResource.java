@@ -15,7 +15,6 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
-
 @RestController
 @RequestMapping(value = "/produtos")
 public class ProdutoResource {
@@ -24,40 +23,44 @@ public class ProdutoResource {
     private ProdutoService produtoService;
 
     @GetMapping
-    public ResponseEntity<List<ProdutoDTO>> findAll() {
-        return ResponseEntity.ok().body(this.produtoService.findAll());
+    public ResponseEntity<List<ProdutoDTO>> listarTodosProdutos() {
+        return ResponseEntity.ok().body(this.produtoService.listarTodosProdutos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProdutoDTO> byId(@PathVariable Long id) {
-        return ResponseEntity.ok().body(this.produtoService.findById(id));
+    public ResponseEntity<ProdutoDTO> buscarProdutoPorId(@PathVariable Long id) {
+        return ResponseEntity.ok().body(this.produtoService.buscarProdutoPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<ProdutoDTO> insert(@RequestBody @Valid ProdutoRequestDTO dto) {
-        try {
-            ProdutoDTO produtoDto = produtoService.insert(dto);
-            URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").buildAndExpand(produtoDto.getId()).toUri();
-            return ResponseEntity.created(uri).body(produtoDto);
-        } catch (Exception ex) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<ProdutoDTO> cadastrarProduto(@RequestBody @Valid ProdutoRequestDTO dto) {
+
+        ProdutoDTO produtoDto = produtoService.inserir(dto);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").buildAndExpand(produtoDto.getId()).toUri();
+        return ResponseEntity.created(uri).body(produtoDto);
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarProduto(@PathVariable Long id) {
         produtoService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping(value = "/{codigoProduto}")
+    public ResponseEntity<String> atualizarProdutoEstoque(@PathVariable String codigoProduto, @RequestParam Integer quantidade) {
+        var produto = this.produtoService.alterarQuantidadeEstoque(codigoProduto, quantidade);
+        var texto = "Produto enviado para fila ";
+        return ResponseEntity.ok().body(texto + produto);
+    }
+
     @PutMapping(value = "/{id}")
-    public ResponseEntity<ProdutoDTO> update(@PathVariable Long id, @RequestBody @Valid ProdutoRequestDTO request) {
-        ProdutoDTO produto = produtoService.update(id, request);
+    public ResponseEntity<ProdutoDTO> atualizarProduto(@PathVariable Long id, @RequestBody @Valid ProdutoRequestDTO request) {
+        ProdutoDTO produto = produtoService.atualizarProduto(id, request);
         return ResponseEntity.ok().body(produto);
     }
 
-    @PostMapping(value ="/upload")
-    public ResponseEntity<List<ProdutoDTO>> uploadFile(@RequestParam("file") MultipartFile file) {
+    @PostMapping(value = "/upload")
+    public ResponseEntity<List<ProdutoDTO>> uploadArquivoCSV(@RequestParam("file") MultipartFile file) {
 
         if (ProdutoUtil.temFormatoCSV(file)) {
             try {

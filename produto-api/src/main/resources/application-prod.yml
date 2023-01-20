@@ -2,7 +2,7 @@ spring:
   datasource:
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
-    url: ${POSTGRES_URL_DB}
+    url: ${URL_POSTGRES}
 
 
   flyway:
@@ -12,3 +12,10 @@ spring:
     locations: classpath:db/migration
     enabled: true
     validate-on-migrate: true
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: 12345678
+    virtual-host: /

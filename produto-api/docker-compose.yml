@@ -4,7 +4,9 @@ services:
 
   API:
     container_name: produto_api
-    image: 'app.jar'
+    build:
+      context: ./
+    image: produto/api
     restart: always
     ports:
       - "8080:8080"
@@ -12,9 +14,16 @@ services:
       - URL_POSTGRES=jdbc:postgresql://PostgreSQL:5432/produto_db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=12345678
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=12345678
     depends_on:
+      - rabbitmq
       - PostgreSQL
+    networks:
+      - produto-api-network
 
   PostgreSQL:
     container_name: postgres_db
@@ -26,3 +35,23 @@ services:
       - POSTGRES_DB=produto_db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=12345678
+    networks:
+      - produto-api-network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    hostname: rabbitmq
+    restart: always
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - produto-api-network
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=12345678
+networks:
+  produto-api-network:

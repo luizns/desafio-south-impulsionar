@@ -1,19 +1,24 @@
 package com.br.luizns.produtoapi.service;
 
-import com.br.luizns.produtoapi.convert.ProdutoConvert;
 import com.br.luizns.produtoapi.dto.ProdutoDTO;
 import com.br.luizns.produtoapi.dto.ProdutoRequestDTO;
 import com.br.luizns.produtoapi.entity.Produto;
+import com.br.luizns.produtoapi.mapper.ProdutoMapper;
 import com.br.luizns.produtoapi.repository.ProdutoRepository;
+import com.br.luizns.produtoapi.service.exceptions.ResourceNotFoundException;
 import com.br.luizns.produtoapi.util.ProdutoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,75 +26,122 @@ public class ProdutoService {
 
     @Autowired
     private ProdutoRepository produtoRepository;
+    @Autowired
+    private ProdutoMapper produtoMapper;
 
-    public List<ProdutoDTO> findAll() {
-        return this.produtoRepository.findAll().stream().map(ProdutoConvert::entityToDto).collect(Collectors.toList());
+    @Autowired
+    private RabbitMQService rabbitmqService;
+
+
+    public List<ProdutoDTO> listarTodosProdutos() {
+        return this.produtoRepository.findAll().stream().map(produtoMapper.INSTANCE::entidadeParaDto).collect(Collectors.toList());
     }
 
-    public ProdutoDTO findById(Long id) {
+    public ProdutoDTO buscarProdutoPorId(Long id) {
         return this.produtoRepository
                 .findById(id)
-                .map(ProdutoConvert::entityToDto)
-                .orElseThrow(RuntimeException::new);
+                .map(produtoMapper.INSTANCE::entidadeParaDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Id produto não encontrado: " + id));
     }
 
-    public ProdutoDTO insert(ProdutoRequestDTO request) {
-        Assert.isNull(request.getId(), "Não foi possível inserir o registro");
+    public ProdutoDTO inserir(ProdutoRequestDTO request) {
 
-        return ProdutoConvert
-                .entityToDto(this.produtoRepository
-                        .save(ProdutoConvert.dtoToEntity(request)));
+        Assert.isNull(request.getId(), "Não foi possível inserir o produto");
+
+        var produto = produtoMapper.INSTANCE.dtoParaEntidade(request);
+
+        var codidoProduto = buscarProdutoCodigoProduto(produto);
+
+        if (codidoProduto) {
+            throw new DataIntegrityViolationException("Produto já cadastrado na base dados: COD. = " + produto.getCodigoProduto());
+        }
+
+        produto.setValorFinal(getValorFinal(produto.getValorBruto(), produto.getImpostos()));
+        return produtoMapper.INSTANCE.entidadeParaDto(this.produtoRepository.save(produto));
     }
 
     public void delete(Long id) {
-        this.produtoRepository
-                .findById(id)
-                .ifPresent(entity -> this.produtoRepository.delete(entity));
+        try {
+            this.produtoRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException("Id não encontrado: " + id);
+        }
     }
 
-    public ProdutoDTO update(Long id, ProdutoRequestDTO request) {
+    public String alterarQuantidadeEstoque(String codigoProduto, Integer quantidade) {
+        return this.produtoRepository
+                .findByCodigoProduto(codigoProduto)
+                .map(produto -> {
+                    produto.setQuantidade(quantidade);
+                    this.rabbitmqService.enviarMensagem(produto);
+                    return "CodigoProduto: " + produto.getCodigoProduto();
+                }).orElseThrow(() -> new ResourceNotFoundException("Código do produto não encontrado: " + codigoProduto));
+    }
 
-        Optional<Produto> optional = produtoRepository.findById(id);
-        if (optional.isPresent()) {
-            Produto db = optional.get();
-            db.setCategoria(request.getCategoria());
-            db.setCodigoProduto(request.getCodigoProduto());
-            db.setCodigoDeBarras(request.getCodigoDeBarras());
-            db.setSerie(request.getSerie());
-            db.setNome(request.getNome());
-            db.setDescricao(request.getDescricao());
-            db.setCategoria(request.getCategoria());
-            db.setValorBruto(request.getValorBruto());
-            db.setImpostos(request.getImpostos());
-            db.setDataDeFabricacao(request.getDataDeFabricacao());
-            db.setDataDeValidade(request.getDataDeValidade());
-            db.setCor(request.getCor());
-            db.setMaterial(request.getMaterial());
-            db.setQuantidade(request.getQuantidade());
+    public ProdutoDTO atualizarProduto(Long id, ProdutoRequestDTO request) {
 
-            produtoRepository.save(db);
+        return this.produtoRepository.findById(id)
+                .map(produto -> {
+                            produto.setCodigoProduto(request.getCodigoProduto());
+                            produto.setCodigoDeBarras(request.getCodigoDeBarras());
+                            produto.setSerie(request.getSerie());
+                            produto.setNome(request.getNome());
+                            produto.setDescricao(request.getDescricao());
+                            produto.setCategoria(request.getCategoria());
+                            produto.setValorBruto(request.getValorBruto());
+                            produto.setImpostos(request.getImpostos());
+                            produto.setDataDeFabricacao(request.getDataDeFabricacao());
+                            produto.setDataDeValidade(request.getDataDeValidade());
+                            produto.setCor(request.getCor());
+                            produto.setMaterial(request.getMaterial());
+                            produto.setQuantidade(request.getQuantidade());
+                            produto.setValorFinal(getValorFinal(request.getValorBruto(), request.getImpostos()));
 
-            return ProdutoConvert.entityToDto(db);
-        } else {
-            throw new RuntimeException("Não foi possível atualizar o registro");
+                            produtoRepository.save(produto);
 
-        }
+                            return produtoMapper.INSTANCE.entidadeParaDto(produto);
+                        }
+                )
+                .orElseThrow(() -> new ResourceNotFoundException("Id não encontrado: " + id));
+
     }
 
     public List<ProdutoDTO> salvarArquivo(MultipartFile file) {
 
         try {
             List<Produto> list = ProdutoUtil.csvParaProduto(file.getInputStream());
-            return this.produtoRepository.saveAll(list).stream().map(ProdutoConvert::entityToDto).collect(Collectors.toList());
+            return this.produtoRepository.saveAll(list).stream().map(produtoMapper.INSTANCE::entidadeParaDto).collect(Collectors.toList());
         } catch (IOException e) {
-            throw new RuntimeException("fail to store csv data: " + e.getMessage());
+            throw new ResourceNotFoundException("Falha ao armazenar dados csv: " + e.getMessage());
         }
-
 
     }
 
+    public static BigDecimal getValorFinal(BigDecimal valorBrutoProduto, BigDecimal impostoProduto) {
 
+        if (Objects.equals(valorBrutoProduto, BigDecimal.valueOf(0)) ||
+                Objects.equals(impostoProduto, BigDecimal.valueOf(0))) {
+            return BigDecimal.ZERO;
+        }
 
+        var percentual = new BigDecimal("100.00");
+        var taxaPercentualDaMargemDeLucro = new BigDecimal("45.0")
+                .divide(percentual, 3, RoundingMode.HALF_EVEN)
+                .add(new BigDecimal("1.00"));
+
+        var calculoTaxaImpostoMaisValorBruto = valorBrutoProduto.multiply(
+                (impostoProduto.add(new BigDecimal("100.00"))
+                        .divide(percentual, 3, RoundingMode.HALF_EVEN)));
+        var calculoValorFinal = calculoTaxaImpostoMaisValorBruto.multiply(taxaPercentualDaMargemDeLucro);
+
+        return calculoValorFinal.setScale(2, RoundingMode.HALF_EVEN);
+    }
+
+    public Boolean buscarProdutoCodigoProduto(Produto request) {
+        return produtoRepository.findByCodigoProduto(request.getCodigoProduto())
+                .stream()
+                .anyMatch(produtoExistente -> !produtoExistente.equals(request));
+    }
 
 
 }
