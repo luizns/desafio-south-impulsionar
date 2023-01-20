@@ -12,12 +12,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8088/produtos",
-					"protocol": "http",
+					"raw": "{{url_base}}/produtos",
 					"host": [
-						"localhost"
+						"{{url_base}}"
 					],
-					"port": "8088",
 					"path": [
 						"produtos"
 					]
@@ -31,28 +29,26 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/produtos/8",
-					"protocol": "http",
+					"raw": "{{url_base}}/produtos/{{id}}",
 					"host": [
-						"localhost"
+						"{{url_base}}"
 					],
-					"port": "8080",
 					"path": [
 						"produtos",
-						"8"
+						"{{id}}"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Cadastrar Produtos",
+			"name": "CADASTRAR NOVO PRODUTO",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"codigoProduto\": \"8t09o00n\",\r\n    \"codigoDeBarras\": \"729936360073\",\r\n    \"serie\": \"1/2018\",\r\n    \"nome\": \"Livro Padrões Projetos\",\r\n    \"descricao\": \"Livro melhores praticas\",\r\n    \"categoria\": \"ESCRITORIO\",\r\n    \"valorBruto\": 79.90,\r\n    \"impostos\": 5.9,\r\n    \"dataDeFabricacao\": \"2022-08-01\",\r\n    \"dataDeValidade\": \"2022-11-02\",\r\n    \"cor\": \"BRANCO\",\r\n    \"material\": \"PAPEL\",\r\n    \"quantidade\": 9\r\n}",
+					"raw": "{\r\n    \"codigoProduto\": \"8t09s00n\",\r\n    \"codigoDeBarras\": \"729936360073\",\r\n    \"serie\": \"1/2018\",\r\n    \"nome\": \"Livro Padrões Projetos\",\r\n    \"descricao\": \"Livro melhores praticas\",\r\n    \"categoria\": \"ESCRITORIO\",\r\n    \"valorBruto\": 29.90,\r\n    \"impostos\": 10.00,\r\n    \"dataDeFabricacao\": \"2022-08-01\",\r\n    \"dataDeValidade\": \"2022-11-02\",\r\n    \"cor\": \"BRANCO\",\r\n    \"material\": \"PAPEL\",\r\n    \"quantidade\": 6\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -60,12 +56,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/produtos",
-					"protocol": "http",
+					"raw": "{{url_base}}/produtos",
 					"host": [
-						"localhost"
+						"{{url_base}}"
 					],
-					"port": "8080",
 					"path": [
 						"produtos"
 					]
@@ -74,26 +68,25 @@
 			"response": []
 		},
 		{
-			"name": "Upload Arquivos de Produtos",
+			"name": "UPLOADO ARQUIVOS CSV LISTA DE PRODUTOS",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
-					"mode": "raw",
-					"raw": "{\r\n        \"codigoProduto\": \"7t0do00n\",\r\n        \"codigoDeBarras\": \"629936360072\",\r\n        \"serie\": \"1/2017\",\r\n        \"nome\": \"Livro Design Patterns\",\r\n        \"descricao\": \"Livro melhores praticas\",\r\n        \"categoria\": \"ESCRITORIO\",\r\n        \"valorBruto\": 29.90,\r\n        \"impostos\": 10.00,\r\n        \"dataDeFabricacao\": \"2022-08-01\",\r\n        \"dataDeValidade\": \"2022-08-02\",\r\n        \"cor\": \"AZUL\",\r\n        \"material\": \"PAPEl\",\r\n        \"quantidade\": 1\r\n    }",
-					"options": {
-						"raw": {
-							"language": "json"
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/luizn/Desktop/PI/mostruario_fabrica.csv"
 						}
-					}
+					]
 				},
 				"url": {
-					"raw": "http://localhost:8080/produtos/upload",
-					"protocol": "http",
+					"raw": "{{url_base}}/produtos/upload",
 					"host": [
-						"localhost"
+						"{{url_base}}"
 					],
-					"port": "8080",
 					"path": [
 						"produtos",
 						"upload"
@@ -109,7 +102,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"codigoProduto\": \"8t09o00n\",\r\n    \"codigoDeBarras\": \"729936360073\",\r\n    \"serie\": \"1/2018\",\r\n    \"nome\": \"Livro Padrões Projetos\",\r\n    \"descricao\": \"Livro melhores praticas\",\r\n    \"categoria\": \"ESCRITORIO\",\r\n    \"valorBruto\": 79.90,\r\n    \"impostos\": 5.9,\r\n    \"dataDeFabricacao\": \"2022-08-01\",\r\n    \"dataDeValidade\": \"2022-11-02\",\r\n    \"cor\": \"BRANCO\",\r\n    \"material\": \"PAPEL\",\r\n    \"quantidade\": 3\r\n}",
+					"raw": "{\r\n    \"codigoProduto\": \"8t09o00n\",\r\n    \"codigoDeBarras\": \"729936360073\",\r\n    \"serie\": \"1/2018\",\r\n    \"nome\": \"Livro Padrões Projetos\",\r\n    \"descricao\": \"Livro melhores praticas\",\r\n    \"categoria\": \"ESCRITORIO\",\r\n    \"valorBruto\": 7.90,\r\n    \"impostos\": 5.9,\r\n    \"dataDeFabricacao\": \"2022-08-01\",\r\n    \"dataDeValidade\": \"2022-11-02\",\r\n    \"cor\": \"BRANCO\",\r\n    \"material\": \"PAPEL\",\r\n    \"quantidade\": 6\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -117,35 +110,64 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8088/produtos/5",
-					"protocol": "http",
+					"raw": "{{url_base}}/produtos/{{id}}",
 					"host": [
-						"localhost"
+						"{{url_base}}"
 					],
-					"port": "8088",
 					"path": [
 						"produtos",
-						"5"
+						"{{id}}"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Deletar Produto Por ID",
+			"name": "ALTERAR QUANTIDADE PRODUTO POR CODIGO",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url_base}}/produtos/{{codigo-produto}}?quantidade={{quantidade}}",
+					"host": [
+						"{{url_base}}"
+					],
+					"path": [
+						"produtos",
+						"{{codigo-produto}}"
+					],
+					"query": [
+						{
+							"key": "quantidade",
+							"value": "{{quantidade}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETAR PRODUTO POR ID",
 			"request": {
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/produtos/2",
-					"protocol": "http",
+					"raw": "{{url_base}}/produtos/{{id}}",
 					"host": [
-						"localhost"
+						"{{url_base}}"
 					],
-					"port": "8080",
 					"path": [
 						"produtos",
-						"2"
+						"{{id}}"
 					]
 				}
 			},
